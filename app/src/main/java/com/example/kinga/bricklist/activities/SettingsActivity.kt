@@ -1,9 +1,10 @@
-package com.example.kinga.bricklist
+package com.example.kinga.bricklist.activities
 
 import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.example.kinga.bricklist.R
 import kotlinx.android.synthetic.main.activity_settings.*
 
 

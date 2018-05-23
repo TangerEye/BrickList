@@ -1,12 +1,12 @@
-package com.example.kinga.bricklist
+package com.example.kinga.bricklist.activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Message
 import android.util.Log
 import android.widget.Toast
+import com.example.kinga.bricklist.R
+import com.example.kinga.bricklist.XML.ImportXML
 import kotlinx.android.synthetic.main.activity_new_project.*
-import kotlinx.android.synthetic.main.activity_settings.*
 
 class NewProjectActivity : AppCompatActivity() {
 
@@ -20,14 +20,17 @@ class NewProjectActivity : AppCompatActivity() {
 
         addProjectButton.setOnClickListener {
             var success = true
+            projectNumber = projectNumberValue.text.toString()
+            val importXML = ImportXML(url, projectNumber)
+            importXML.downloadXml()
             if (success) {
                 val toast = Toast.makeText(baseContext, "Project " + projectNumberValue.text.toString() + "  has been successfully added.", Toast.LENGTH_LONG)
-                toast.show();
+                toast.show()
                 projectNumberValue.setText("")
             }
             else {
                 val toast = Toast.makeText(baseContext, "An error occured while adding the project.", Toast.LENGTH_LONG)
-                toast.show();
+                toast.show()
             }
 
         }
