@@ -1,11 +1,10 @@
 package com.example.kinga.bricklist.models;
 
 class Item {
-    private var id: Int? = null
-    private var itemType: String? = null
-    private var itemId: String? = null
-    private var quantityInStore: Int? = null
-    private var color: Int? = null
-    private var extra: Boolean? = null
-    private var alternate: Boolean? = null
+    var itemType: String? = null
+    var itemId: String? = null
+    var quantityInStore: Int? = null
+    var color: Int? = null
+    var extra: Boolean? = null
+    var alternate: Boolean? = null
 }
