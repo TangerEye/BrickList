@@ -10,8 +10,6 @@ import com.example.kinga.bricklist.R
 class MainActivity : AppCompatActivity() {
 
     private var url = "http://fcds.cs.put.poznan.pl/MyWeb/BL/"
-    private val TAG = "StateChange"
-    //Log.i(TAG, "onCreate")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

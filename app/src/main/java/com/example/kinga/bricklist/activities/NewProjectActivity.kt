@@ -1,11 +1,13 @@
 package com.example.kinga.bricklist.activities
 
 import android.os.AsyncTask
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
+import android.support.annotation.RequiresApi
 import android.util.Log
 import android.widget.Toast
+import com.example.kinga.bricklist.Database
 import com.example.kinga.bricklist.R
 import com.example.kinga.bricklist.models.Item
 import kotlinx.android.synthetic.main.activity_new_project.*
@@ -19,6 +21,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
+import java.sql.SQLException
 import javax.xml.parsers.DocumentBuilderFactory
 
 class NewProjectActivity : AppCompatActivity() {
@@ -36,7 +39,18 @@ class NewProjectActivity : AppCompatActivity() {
             val downloadXML = DownloadXML()
             downloadXML.execute()
             var items = parseXml()
-            Log.i("StateChanged", items.size.toString())
+            val database = Database(this)
+            try {
+                database.createDataBase()
+            } catch (e: IOException) {
+                throw Error("Error creating database")
+            }
+            try {
+                database.openDataBase()
+            } catch (e: SQLException) {
+                throw e
+            }
+            database.addNewInventory(projectNumber, items)
         }
     }
 
@@ -91,7 +105,6 @@ class NewProjectActivity : AppCompatActivity() {
         }
     }
 
-
     fun parseXml(): MutableList<Item> {
         var items = mutableListOf<Item>()
         val filename = "$projectNumber.xml"
@@ -119,7 +132,7 @@ class NewProjectActivity : AppCompatActivity() {
                                 when (node.nodeName) {
                                     "ITEMTYPE" -> { item.itemType = node.textContent }
                                     "ITEMID" -> { item.itemId = node.textContent }
-                                    "QTY" -> { item.quantityInStore = node.textContent.toInt() }
+                                    "QTY" -> { item.quantityInSet = node.textContent.toInt() }
                                     "COLOR" -> { item.color = node.textContent.toInt() }
                                     "EXTRA" -> { item.extra = node.textContent == "Y" }
                                     "ALTERNATE" -> { item.alternate = node.textContent == "Y" }
@@ -127,11 +140,11 @@ class NewProjectActivity : AppCompatActivity() {
                             }
                         }
 
-                        if (item.itemType != null && item.itemId != null && item.quantityInStore != null && item.color != null && item.extra != null && item.alternate != null)
+                        if (item.itemType != null && item.itemId != null && item.quantityInSet != null
+                                && item.color != null && item.extra != null && item.alternate == false)
                             items.add(item)
                     }
                 }
-
             }
         }
         return items
