@@ -7,4 +7,16 @@ class Item {
     var color: Int? = null
     var extra: Boolean? = null
     var alternate: Boolean? = null
+
+    constructor(itemType: String, itemId: String, quantityInSet: Int, color: Int, extra: Boolean, alternate: Boolean){
+        this.itemType = itemType
+        this.itemId = itemId
+        this.quantityInSet = quantityInSet
+        this.color = color
+        this.extra = extra
+        this.alternate = alternate
+    }
+
+    constructor()
+
 }

@@ -4,8 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.ArrayAdapter
+import com.example.kinga.bricklist.Database
 import kotlinx.android.synthetic.main.activity_main.*
 import com.example.kinga.bricklist.R
+import java.io.IOException
+import java.sql.SQLException
+import android.widget.ListView
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,7 +21,22 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val database = Database(this)
+        try {
+            database.createDataBase()
+        } catch (e: IOException) {
+            throw Error("Error creating database")
+        }
+        try {
+            database.openDataBase()
+        } catch (e: SQLException) {
+            throw e
+        }
 
+        var inventoriesListView: ListView = findViewById(R.id.inventoriesListView)
+        var inventoriesList = database.getInventories()
+        var adapter = ListViewAdapter(this, inventoriesList)
+        inventoriesListView.adapter = adapter
 
         newProjectButton.setOnClickListener {
             val i = Intent(this, NewProjectActivity::class.java)

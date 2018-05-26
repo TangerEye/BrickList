@@ -33,23 +33,23 @@ class NewProjectActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_project)
         urlPart = intent.getStringExtra("url")
+        val database = Database(this)
+        try {
+            database.createDataBase()
+        } catch (e: IOException) {
+            throw Error("Error creating database")
+        }
+        try {
+            database.openDataBase()
+        } catch (e: SQLException) {
+            throw e
+        }
 
         addProjectButton.setOnClickListener {
             projectNumber = projectNumberValue.text.toString()
             val downloadXML = DownloadXML()
             downloadXML.execute()
             var items = parseXml()
-            val database = Database(this)
-            try {
-                database.createDataBase()
-            } catch (e: IOException) {
-                throw Error("Error creating database")
-            }
-            try {
-                database.openDataBase()
-            } catch (e: SQLException) {
-                throw e
-            }
             database.addNewInventory(projectNumber, items)
         }
     }
@@ -149,6 +149,5 @@ class NewProjectActivity : AppCompatActivity() {
         }
         return items
     }
-
 
 }

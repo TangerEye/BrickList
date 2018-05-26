@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  Single List Item Design -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="100"
+    >
+    <TextView
+        android:id="@+id/Id"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="20"
+        android:text="Id"/>
+
+    <TextView
+        android:id="@+id/Name"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="60"
+        android:text="Inventory's name"/>
+
+    <TextView
+        android:id="@+id/Active"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="20"
+        android:text="Active"/>
+</LinearLayout>

@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import com.example.kinga.bricklist.models.Inventory
 import com.example.kinga.bricklist.models.Item
 import java.io.FileOutputStream
 import java.io.IOException
@@ -14,7 +15,6 @@ class Database: SQLiteOpenHelper {
 
     private var myDataBase: SQLiteDatabase? = null
     private var context2: Context
-
     private var DATABASE_NAME = "BrickList2.db"
     private var DATABASE_PATH = "/data/data/com.example.kinga.bricklist/databases/"
 
@@ -23,6 +23,9 @@ class Database: SQLiteOpenHelper {
     }
 
     override fun onCreate(p0: SQLiteDatabase?) {
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
     }
 
     fun createDataBase() {
@@ -49,9 +52,6 @@ class Database: SQLiteOpenHelper {
         if (myDataBase != null)
             myDataBase!!.close()
         super.close()
-    }
-
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
     }
 
     private fun checkDatabase(): Boolean {
@@ -129,4 +129,17 @@ class Database: SQLiteOpenHelper {
         return lastId
     }
 
+    fun getInventories(): ArrayList<Inventory>{
+        val query = "select _id, Name, Active from Inventories"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(query, null)
+        var inventoriesList = ArrayList<Inventory>()
+        if(cursor.moveToFirst()) {
+            inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2)))
+        }
+        while(cursor.moveToNext()){
+            inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2)))
+        }
+        return inventoriesList
+    }
 }
