@@ -5,13 +5,13 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.ArrayAdapter
 import com.example.kinga.bricklist.Database
 import kotlinx.android.synthetic.main.activity_main.*
 import com.example.kinga.bricklist.R
 import java.io.IOException
 import java.sql.SQLException
 import android.widget.ListView
+import com.example.kinga.bricklist.models.Inventory
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         var inventoriesListView: ListView = findViewById(R.id.inventoriesListView)
         var inventoriesList = database.getInventories()
-        var adapter = ListViewAdapter(this, inventoriesList)
+        var adapter = InventoriesListViewAdapter(this, inventoriesList)
         inventoriesListView.adapter = adapter
 
         newProjectButton.setOnClickListener {
@@ -48,6 +48,13 @@ class MainActivity : AppCompatActivity() {
             val i = Intent(this, SettingsActivity::class.java)
             i.putExtra("url", url)
             startActivityForResult(i, 999)
+        }
+
+        inventoriesListView.setOnItemClickListener { _, _, position, _ ->
+            val selectedInventory = inventoriesList[position]
+            val i = Intent(this, InventoryActivity::class.java)
+            i.putExtra("inventoryId", selectedInventory.id)
+            startActivity(i)
         }
     }
 

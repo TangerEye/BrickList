@@ -130,8 +130,8 @@ class NewProjectActivity : AppCompatActivity() {
                             val node=children.item(j)
                             if (node is Element) {
                                 when (node.nodeName) {
-                                    "ITEMTYPE" -> { item.itemType = node.textContent }
-                                    "ITEMID" -> { item.itemId = node.textContent }
+                                    "ITEMTYPE" -> { item.itemType = node.textContent.toInt() }
+                                    "ITEMID" -> { item.itemId = node.textContent.toInt() }
                                     "QTY" -> { item.quantityInSet = node.textContent.toInt() }
                                     "COLOR" -> { item.color = node.textContent.toInt() }
                                     "EXTRA" -> { item.extra = node.textContent == "Y" }

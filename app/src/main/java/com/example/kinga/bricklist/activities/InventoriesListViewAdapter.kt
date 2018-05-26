@@ -10,7 +10,7 @@ import android.widget.BaseAdapter
 import com.example.kinga.bricklist.R
 
 
-class ListViewAdapter(context: Context, private val inventoriesList: ArrayList<Inventory>):
+class InventoriesListViewAdapter(context: Context, private val inventoriesList: ArrayList<Inventory>):
         BaseAdapter() {
 
     private var inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -28,7 +28,7 @@ class ListViewAdapter(context: Context, private val inventoriesList: ArrayList<I
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val rowView = inflater.inflate(R.layout.activity_listview, parent, false)
+        val rowView = inflater.inflate(R.layout.activity_inventories_listview, parent, false)
 
         val idTextView = rowView.findViewById(R.id.Id) as TextView
         val nameTextView = rowView.findViewById(R.id.Name) as TextView

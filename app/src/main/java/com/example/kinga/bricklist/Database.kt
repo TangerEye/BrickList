@@ -142,4 +142,26 @@ class Database: SQLiteOpenHelper {
         }
         return inventoriesList
     }
+
+    fun getCurrentInventoryParts(inventoryId: Int): ArrayList<Item>{
+        val query = "select TypeID, ItemID, QuantityInSet, ColorID, extra from InventoriesParts where InventoryID = $inventoryId"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(query, null)
+        var items = ArrayList<Item>()
+        if(cursor.moveToFirst()) {
+            Log.i("StateChange", cursor.getInt(1).toString())
+            var isExtra = false
+            if (cursor.getInt(4) == 1)
+                isExtra = true
+            items.add(Item(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3), isExtra, false))
+        }
+
+        while(cursor.moveToNext()){
+            var isExtra = false
+            if (cursor.getInt(4) == 1)
+                isExtra = true
+            items.add(Item(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3), isExtra, false))
+        }
+        return items
+    }
 }
