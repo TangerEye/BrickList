@@ -1,14 +1,14 @@
-package com.example.kinga.bricklist.activities
+package com.example.kinga.bricklist.ListViewAdapters
 
 import android.view.View
 import android.view.ViewGroup
-import com.example.kinga.bricklist.models.Inventory
 import android.content.Context
-import android.widget.TextView
+import android.text.Editable
 import android.view.LayoutInflater
-import android.widget.BaseAdapter
+import android.widget.*
 import com.example.kinga.bricklist.R
 import com.example.kinga.bricklist.models.Item
+import kotlinx.android.synthetic.main.activity_inventory_listview.*
 
 
 class InventoryPartsListViewAdapter(context: Context, private val inventoryPartsList: ArrayList<Item>):
@@ -34,15 +34,20 @@ class InventoryPartsListViewAdapter(context: Context, private val inventoryParts
         val idTextView = rowView.findViewById(R.id.ItemId) as TextView
         val colorTextView = rowView.findViewById(R.id.ColorId) as TextView
         val quantityInSetTextView = rowView.findViewById(R.id.QuantityInSet) as TextView
-        val quantityInStoreTextView = rowView.findViewById(R.id.QuantityInStore) as TextView
+        val quantityInStoreNumberPicker = rowView.findViewById(R.id.QuantityInStore) as NumberPicker
 
+        quantityInStoreNumberPicker.minValue = 0
+        quantityInStoreNumberPicker.maxValue = 100
+        quantityInStoreNumberPicker.setOnValueChangedListener{_, _, newVal ->
+            quantityInStoreNumberPicker.tag = newVal
+        }
 
         val item = getItem(position) as Item
 
         idTextView.text = item.itemId.toString()
         colorTextView.text = item.color.toString()
         quantityInSetTextView.text = item.quantityInSet.toString()
-        quantityInStoreTextView.text = item.quantityInStore.toString()
+        quantityInStoreNumberPicker.value = item.quantityInStore!!
 
         return rowView
     }

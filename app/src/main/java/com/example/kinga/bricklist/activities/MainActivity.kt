@@ -4,14 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import com.example.kinga.bricklist.Database
 import kotlinx.android.synthetic.main.activity_main.*
 import com.example.kinga.bricklist.R
 import java.io.IOException
 import java.sql.SQLException
 import android.widget.ListView
-import com.example.kinga.bricklist.models.Inventory
+import com.example.kinga.bricklist.ListViewAdapters.InventoriesListViewAdapter
 
 
 class MainActivity : AppCompatActivity() {

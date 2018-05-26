@@ -7,37 +7,44 @@
     tools:context="com.example.kinga.bricklist.activities.InventoryActivity">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/all"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:weightSum="100"
-        >
+        android:layout_height="50dp"
+        android:weightSum="100">
+
         <TextView
             android:id="@+id/ItemId"
-            android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="25"
-            android:text="Item Id"/>
+            android:text="Item Id"
+            android:textAlignment="center" />
 
         <TextView
             android:id="@+id/ColorId"
-            android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="25"
-            android:text="Color Id"/>
+            android:text="Color Id"
+            android:textAlignment="center" />
 
         <TextView
             android:id="@+id/QuantityInSet"
-            android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="25"
-            android:text="QuantityInSet"/>
+            android:text="QuantityInSet"
+            android:textAlignment="center" />
 
-        <TextView
+        <NumberPicker
             android:id="@+id/QuantityInStore"
-            android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="25"
-            android:text="QuantityInStore"/>
+            android:ems="10"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:gravity="center_horizontal" />
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

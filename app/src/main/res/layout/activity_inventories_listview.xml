@@ -5,24 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="100">
+
     <TextView
         android:id="@+id/Id"
-        android:layout_height="wrap_content"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="20"
-        android:text="Id"/>
+        android:text="Id"
+        android:textAlignment="center" />
 
     <TextView
         android:id="@+id/Name"
-        android:layout_height="wrap_content"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="60"
-        android:text="Inventory's name"/>
+        android:text="Inventory's name"
+        android:textAlignment="center" />
 
     <TextView
         android:id="@+id/Active"
-        android:layout_height="wrap_content"
         android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="20"
-        android:text="Active"/>
+        android:text="Active"
+        android:textAlignment="center" />
 </LinearLayout>

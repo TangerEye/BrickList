@@ -1,4 +1,4 @@
-package com.example.kinga.bricklist.activities
+package com.example.kinga.bricklist.ListViewAdapters
 
 import android.view.View
 import android.view.ViewGroup
