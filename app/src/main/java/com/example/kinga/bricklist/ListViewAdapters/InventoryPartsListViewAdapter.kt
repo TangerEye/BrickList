@@ -3,13 +3,10 @@ package com.example.kinga.bricklist.ListViewAdapters
 import android.view.View
 import android.view.ViewGroup
 import android.content.Context
-import android.text.Editable
 import android.view.LayoutInflater
 import android.widget.*
 import com.example.kinga.bricklist.R
 import com.example.kinga.bricklist.models.Item
-import kotlinx.android.synthetic.main.activity_inventory_listview.*
-
 
 class InventoryPartsListViewAdapter(context: Context, private val inventoryPartsList: ArrayList<Item>):
         BaseAdapter() {

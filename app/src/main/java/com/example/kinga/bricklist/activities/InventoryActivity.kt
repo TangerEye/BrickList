@@ -53,7 +53,7 @@ class InventoryActivity : AppCompatActivity() {
             inventoryPartsList.forEachIndexed {index, element ->
                 Log.i("StateChange", element.itemId.toString() + " "+ element.quantityInStore)
             }
-            
+            database.updateQuantityInStore(this.inventoryId.toString(), inventoryPartsList)
             super.finish()
         }
     }

@@ -1,19 +1,23 @@
-package com.example.kinga.bricklist.models;
+package com.example.kinga.bricklist.models
+
+import android.util.Log
 
 class Item {
-    var itemType: Int? = null
-    var itemId: Int? = null
+    var itemType: String? = null
+    var code: String? = null
     var quantityInSet: Int? = null
-    var quantityInStore: Int? = null
+    var quantityInStore: Int? = 0
     var color: Int? = null
     var extra: Boolean? = null
     var alternate: Boolean? = null
+    var itemId: Int? = 0
 
-    constructor(itemType: Int, itemId: Int, quantityInSet: Int, color: Int, extra: Boolean, alternate: Boolean){
+
+    constructor(itemType: String, code: String, quantityInSet: Int, quantityInStore: Int, color: Int, extra: Boolean, alternate: Boolean){
         this.itemType = itemType
-        this.itemId = itemId
+        this.code = code
         this.quantityInSet = quantityInSet
-        this.quantityInStore = 0
+        this.quantityInStore = quantityInStore
         this.color = color
         this.extra = extra
         this.alternate = alternate
@@ -21,4 +25,7 @@ class Item {
 
     constructor()
 
+    fun showItem() {
+        Log.i("StateChange", " itemType: " + itemType + " code: " + code + " qInSet: " + quantityInSet + " qInStore: " + quantityInStore + " itemId: " + itemId)
+    }
 }

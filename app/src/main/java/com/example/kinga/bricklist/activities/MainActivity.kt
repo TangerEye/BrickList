@@ -11,30 +11,35 @@ import java.io.IOException
 import java.sql.SQLException
 import android.widget.ListView
 import com.example.kinga.bricklist.ListViewAdapters.InventoriesListViewAdapter
+import com.example.kinga.bricklist.models.Inventory
 
 
 class MainActivity : AppCompatActivity() {
 
     private var url = "http://fcds.cs.put.poznan.pl/MyWeb/BL/"
 
+    var adapter: InventoriesListViewAdapter? = null
+    var database: Database? = null
+    var inventoriesList: ArrayList<Inventory>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val database = Database(this)
+        this.database = Database(this)
         try {
-            database.createDataBase()
+            this.database!!.createDataBase()
         } catch (e: IOException) {
             throw Error("Error creating database")
         }
         try {
-            database.openDataBase()
+            this.database!!.openDataBase()
         } catch (e: SQLException) {
             throw e
         }
 
         var inventoriesListView: ListView = findViewById(R.id.inventoriesListView)
-        var inventoriesList = database.getInventories()
-        var adapter = InventoriesListViewAdapter(this, inventoriesList)
+        this.inventoriesList = this.database!!.getInventories()
+        this.adapter = InventoriesListViewAdapter(this, this.inventoriesList!!)
         inventoriesListView.adapter = adapter
 
         newProjectButton.setOnClickListener {
@@ -50,11 +55,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         inventoriesListView.setOnItemClickListener { _, _, position, _ ->
-            val selectedInventory = inventoriesList[position]
+            this.inventoriesList = this.database!!.getInventories()
+            val selectedInventory = this.inventoriesList!![position]
             val i = Intent(this, InventoryActivity::class.java)
             i.putExtra("inventoryId", selectedInventory.id)
             startActivity(i)
         }
+    }
+
+    override fun onResume() {
+        var inventoriesList = this.database!!.getInventories()
+        this.adapter = InventoriesListViewAdapter(this, inventoriesList)
+        inventoriesListView.adapter = adapter
+
+        this.adapter!!.notifyDataSetChanged()
+        super.onResume()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
@@ -62,6 +77,4 @@ class MainActivity : AppCompatActivity() {
             url = data.extras.getString("url")
         }
     }
-
-
 }

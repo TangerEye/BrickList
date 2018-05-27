@@ -15,10 +15,10 @@ class Database: SQLiteOpenHelper {
 
     private var myDataBase: SQLiteDatabase? = null
     private var context2: Context
-    private var DATABASE_NAME = "BrickList2.db"
+    private var DATABASE_NAME = "BrickList4.db"
     private var DATABASE_PATH = "/data/data/com.example.kinga.bricklist/databases/"
 
-    constructor(context: Context):super(context, "BrickList2.db", null, 7){
+    constructor(context: Context):super(context, "BrickList4.db", null, 7){
         this.context2 = context
     }
 
@@ -45,7 +45,6 @@ class Database: SQLiteOpenHelper {
     fun openDataBase() {
         val myPath = DATABASE_PATH + DATABASE_NAME
         myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE)
-
     }
 
     override fun close() {
@@ -85,9 +84,6 @@ class Database: SQLiteOpenHelper {
     }
 
     fun addNewInventory(inventoryNumber: String, items: MutableList<Item>) {
-        /*var date = LocalDate.now()
-        var dateString = date.toString().substring(0, 4) + date.toString().substring(6, 8) + date.toString().substring(10, 12)
-        Log.i("stateChange", dateString)*/
         val inventoryID = getLastId("Inventories") + 1
 
         val db = this.writableDatabase
@@ -123,7 +119,6 @@ class Database: SQLiteOpenHelper {
         var lastId = 0
         if (cursor.moveToFirst()) {
             lastId = cursor.getInt(0)
-            Log.i("StateChange", "last index: " + lastId + "from: " + inventoryName)
         }
         cursor.close()
         return lastId
@@ -144,24 +139,44 @@ class Database: SQLiteOpenHelper {
     }
 
     fun getCurrentInventoryParts(inventoryId: Int): ArrayList<Item>{
-        val query = "select TypeID, ItemID, QuantityInSet, ColorID, extra from InventoriesParts where InventoryID = $inventoryId"
+        val query = "select TypeID, ItemID, QuantityInSet, QuantityInStore, ColorID, extra from InventoriesParts where InventoryID = $inventoryId"
         val db = this.readableDatabase
         val cursor = db.rawQuery(query, null)
         var items = ArrayList<Item>()
         if(cursor.moveToFirst()) {
-            Log.i("StateChange", cursor.getInt(1).toString())
-            var isExtra = false
-            if (cursor.getInt(4) == 1)
-                isExtra = true
-            items.add(Item(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3), isExtra, false))
+            items.add(Item(cursor.getString(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5) == 1, false))
         }
-
         while(cursor.moveToNext()){
-            var isExtra = false
-            if (cursor.getInt(4) == 1)
-                isExtra = true
-            items.add(Item(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3), isExtra, false))
+            items.add(Item(cursor.getString(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5) == 1, false))
+        }
+        items = setItemsIds(items)
+        items.forEach{it.showItem()}
+        return items
+    }
+
+    fun setItemsIds(items: ArrayList<Item>): ArrayList<Item>{
+        items.forEach {
+            val query = "select _id from Parts where Code=\"${it.code}\""
+            val db = this.readableDatabase
+            val cursor = db.rawQuery(query, null)
+            //Log.i("StateChange", "code: " + it.code)
+            if(cursor.moveToFirst()) {
+                it.itemId = cursor.getInt(0)
+                //Log.i("StateChange", "item id: " + it.itemId.toString())
+            }
         }
         return items
+    }
+
+    fun updateQuantityInStore(inventoryId: String, items: ArrayList<Item> ){
+        val db = this.writableDatabase
+        db.beginTransaction()
+        for (i: Int in 0 until items.size) {
+            val query = "update InventoriesParts set QuantityInStore=" + items[i].quantityInStore + " where InventoryID = " + inventoryId + " and _id= " + items[i].itemId
+            //Log.i("StateChange", query)
+            writableDatabase.execSQL(query)
+        }
+        writableDatabase.setTransactionSuccessful()
+        writableDatabase.endTransaction()
     }
 }

@@ -1,10 +1,8 @@
 package com.example.kinga.bricklist.activities
 
 import android.os.AsyncTask
-import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.annotation.RequiresApi
 import android.util.Log
 import android.widget.Toast
 import com.example.kinga.bricklist.Database
@@ -47,9 +45,12 @@ class NewProjectActivity : AppCompatActivity() {
 
         addProjectButton.setOnClickListener {
             projectNumber = projectNumberValue.text.toString()
+            Log.i("StateChange", "NewProjectActivity: project number: " + projectNumber)
             val downloadXML = DownloadXML()
             downloadXML.execute()
             var items = parseXml()
+            items = database.setItemsIds(items)
+            items.forEach{it.showItem()}
             database.addNewInventory(projectNumber, items)
         }
     }
@@ -105,15 +106,19 @@ class NewProjectActivity : AppCompatActivity() {
         }
     }
 
-    fun parseXml(): MutableList<Item> {
-        var items = mutableListOf<Item>()
+    fun parseXml(): ArrayList<Item> {
+        var items = ArrayList<Item>()
         val filename = "$projectNumber.xml"
         val path = filesDir
         val inDir = File(path, "XML")
 
+        Log.i("StateChange", "1")
         if (inDir.exists()) {
+            Log.i("StateChange", "2")
+
             val file = File(inDir, filename)
             if(file.exists()) {
+                Log.i("StateChange", "3")
                 val xmlDoc: Document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file)
                 xmlDoc.documentElement.normalize()
 
@@ -130,8 +135,8 @@ class NewProjectActivity : AppCompatActivity() {
                             val node=children.item(j)
                             if (node is Element) {
                                 when (node.nodeName) {
-                                    "ITEMTYPE" -> { item.itemType = node.textContent.toInt() }
-                                    "ITEMID" -> { item.itemId = node.textContent.toInt() }
+                                    "ITEMTYPE" -> { item.itemType = node.textContent }
+                                    "ITEMID" -> { item.code = node.textContent }
                                     "QTY" -> { item.quantityInSet = node.textContent.toInt() }
                                     "COLOR" -> { item.color = node.textContent.toInt() }
                                     "EXTRA" -> { item.extra = node.textContent == "Y" }
@@ -140,7 +145,7 @@ class NewProjectActivity : AppCompatActivity() {
                             }
                         }
 
-                        if (item.itemType != null && item.itemId != null && item.quantityInSet != null
+                        if (item.itemType != null && item.code != null && item.quantityInSet != null
                                 && item.color != null && item.extra != null && item.alternate == false)
                             items.add(item)
                     }
