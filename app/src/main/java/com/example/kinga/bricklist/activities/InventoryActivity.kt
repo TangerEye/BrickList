@@ -8,7 +8,6 @@ import com.example.kinga.bricklist.Database
 import com.example.kinga.bricklist.ListViewAdapters.InventoryPartsListViewAdapter
 import com.example.kinga.bricklist.R
 import kotlinx.android.synthetic.main.activity_inventory.*
-import kotlinx.android.synthetic.main.activity_inventory_listview.*
 import kotlinx.android.synthetic.main.activity_inventory_listview.view.*
 import java.io.IOException
 import java.sql.SQLException
@@ -16,13 +15,16 @@ import java.sql.SQLException
 class InventoryActivity : AppCompatActivity() {
 
     private var inventoryId = 0
+    private var inventoryName = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inventory)
 
         this.inventoryId = intent.extras.getInt("inventoryId")
-        inventoryNr.text = "Inventory nr $inventoryId"
+        this.inventoryName = intent.extras.getString("inventoryName")
+        inventoryNr.text = "Inventory \"$inventoryName\""
 
         val database = Database(this)
         try {

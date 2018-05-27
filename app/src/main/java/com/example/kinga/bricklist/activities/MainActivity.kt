@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
             val selectedInventory = this.inventoriesList!![position]
             val i = Intent(this, InventoryActivity::class.java)
             i.putExtra("inventoryId", selectedInventory.id)
+            i.putExtra("inventoryName", selectedInventory.name)
             startActivity(i)
         }
     }

@@ -3,6 +3,7 @@ package com.example.kinga.bricklist.ListViewAdapters
 import android.view.View
 import android.view.ViewGroup
 import android.content.Context
+import android.text.Editable
 import android.view.LayoutInflater
 import android.widget.*
 import com.example.kinga.bricklist.R
@@ -41,7 +42,7 @@ class InventoryPartsListViewAdapter(context: Context, private val inventoryParts
 
         val item = getItem(position) as Item
 
-        idTextView.text = item.itemId.toString()
+        idTextView.text = item.code.toString()
         colorTextView.text = item.color.toString()
         quantityInSetTextView.text = item.quantityInSet.toString()
         quantityInStoreNumberPicker.value = item.quantityInStore!!

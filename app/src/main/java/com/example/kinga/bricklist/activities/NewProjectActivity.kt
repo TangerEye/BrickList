@@ -45,13 +45,18 @@ class NewProjectActivity : AppCompatActivity() {
 
         addProjectButton.setOnClickListener {
             projectNumber = projectNumberValue.text.toString()
-            Log.i("StateChange", "NewProjectActivity: project number: " + projectNumber)
-            val downloadXML = DownloadXML()
-            downloadXML.execute()
-            var items = parseXml()
-            items = database.setItemsIds(items)
-            items.forEach{it.showItem()}
-            database.addNewInventory(projectNumber, items)
+            if (database.checkIfInventoryExists(projectNumber)) {
+                val toast = Toast.makeText(baseContext, "This project already exists.", Toast.LENGTH_LONG)
+                toast.show()
+
+            } else {
+                val downloadXML = DownloadXML()
+                downloadXML.execute()
+                var items = parseXml()
+                items = database.setItemsIds(items)
+                items.forEach { it.showItem() }
+                database.addNewInventory(projectNumber, items)
+            }
         }
     }
 

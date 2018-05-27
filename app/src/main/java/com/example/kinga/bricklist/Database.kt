@@ -18,7 +18,7 @@ class Database: SQLiteOpenHelper {
     private var DATABASE_NAME = "BrickList4.db"
     private var DATABASE_PATH = "/data/data/com.example.kinga.bricklist/databases/"
 
-    constructor(context: Context):super(context, "BrickList4.db", null, 7){
+    constructor(context: Context):super(context, "BrickList4.db", null, 8){
         this.context2 = context
     }
 
@@ -83,7 +83,19 @@ class Database: SQLiteOpenHelper {
         myInput.close()
     }
 
-    fun addNewInventory(inventoryNumber: String, items: MutableList<Item>) {
+    fun checkIfInventoryExists(inventoryNumber: String): Boolean {
+        val db = this.readableDatabase
+        val query = "select * from Inventories where Name = $inventoryNumber"
+        val cursor = db.rawQuery(query, null)
+        if (cursor.count <= 0) {
+            cursor.close()
+            return false
+        }
+        cursor.close()
+        return true
+    }
+
+    fun addNewInventory(inventoryNumber: String, items: MutableList<Item>): String {
         val inventoryID = getLastId("Inventories") + 1
 
         val db = this.writableDatabase
@@ -110,6 +122,7 @@ class Database: SQLiteOpenHelper {
         }
         db.setTransactionSuccessful()
         db.endTransaction()
+        return "success"
     }
 
     private fun getLastId(inventoryName: String): Int {
@@ -149,12 +162,13 @@ class Database: SQLiteOpenHelper {
         while(cursor.moveToNext()){
             items.add(Item(cursor.getString(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5) == 1, false))
         }
-        items = setItemsIds(items)
-        items.forEach{it.showItem()}
+        //items.forEach{it.showItem()}
         return items
     }
+    //constructor(itemType: String, code: String, quantityInSet: Int, quantityInStore: Int, color: Int, extra: Boolean, alternate: Boolean){
 
-    fun setItemsIds(items: ArrayList<Item>): ArrayList<Item>{
+
+        fun setItemsIds(items: ArrayList<Item>): ArrayList<Item>{
         items.forEach {
             val query = "select _id from Parts where Code=\"${it.code}\""
             val db = this.readableDatabase
