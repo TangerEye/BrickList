@@ -18,9 +18,9 @@ class MainActivity : AppCompatActivity() {
 
     private var url = "http://fcds.cs.put.poznan.pl/MyWeb/BL/"
 
-    var adapter: InventoriesListViewAdapter? = null
-    var database: Database? = null
-    var inventoriesList: ArrayList<Inventory>? = null
+    private var adapter: InventoriesListViewAdapter? = null
+    private var database: Database? = null
+    private var inventoriesList: ArrayList<Inventory>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
             throw e
         }
 
-        var inventoriesListView: ListView = findViewById(R.id.inventoriesListView)
+        val inventoriesListView: ListView = findViewById(R.id.inventoriesListView)
         this.inventoriesList = this.database!!.getInventories()
         this.adapter = InventoriesListViewAdapter(this, this.inventoriesList!!)
         inventoriesListView.adapter = adapter
@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
             i.putExtra("url", url)
             startActivityForResult(i, 999)
         }
+
 
         settingsButton.setOnClickListener {
             val i = Intent(this, SettingsActivity::class.java)
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
-        var inventoriesList = this.database!!.getInventories()
+        val inventoriesList = this.database!!.getInventories()
         this.adapter = InventoriesListViewAdapter(this, inventoriesList)
         inventoriesListView.adapter = adapter
 

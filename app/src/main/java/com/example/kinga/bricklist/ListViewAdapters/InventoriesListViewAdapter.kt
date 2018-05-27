@@ -1,5 +1,6 @@
 package com.example.kinga.bricklist.ListViewAdapters
 
+import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import com.example.kinga.bricklist.models.Inventory
@@ -27,6 +28,7 @@ class InventoriesListViewAdapter(context: Context, private val inventoriesList: 
         return position.toLong()
     }
 
+    @SuppressLint("ViewHolder", "SetTextI18n")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val rowView = inflater.inflate(R.layout.activity_inventories_listview, parent, false)
 
@@ -42,7 +44,6 @@ class InventoriesListViewAdapter(context: Context, private val inventoriesList: 
             activeTextView.text = "False"
         else if (inventory.active == 1)
             activeTextView.text = "True"
-
         return rowView
     }
 }

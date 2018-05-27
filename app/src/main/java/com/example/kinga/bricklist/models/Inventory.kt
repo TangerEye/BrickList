@@ -10,6 +10,4 @@ class Inventory {
         this.name = name
         this.active = active
     }
-
-    constructor()
 }

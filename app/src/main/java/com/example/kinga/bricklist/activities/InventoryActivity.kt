@@ -24,7 +24,7 @@ class InventoryActivity : AppCompatActivity() {
 
         this.inventoryId = intent.extras.getInt("inventoryId")
         this.inventoryName = intent.extras.getString("inventoryName")
-        inventoryNr.text = "Inventory: \"$inventoryName\""
+        inventoryNr.text = "Inventory: \"" + inventoryName + "\""
 
         val database = Database(this)
         try {
@@ -38,24 +38,28 @@ class InventoryActivity : AppCompatActivity() {
             throw e
         }
 
-        var inventoryPartsListView: ListView = findViewById(R.id.inventoryPartsListView)
+        val inventoryPartsListView: ListView = findViewById(R.id.inventoryPartsListView)
         var inventoryPartsList = database.getCurrentInventoryParts(inventoryId)
-        var adapter = InventoryPartsListViewAdapter(this, inventoryPartsList)
+        inventoryPartsList = database.getItemsDesignIds(inventoryPartsList)
+
+        for (i: Int in 0 until inventoryPartsList.size) {
+            inventoryPartsList[i] = database.getItemImage(inventoryPartsList[i])
+            inventoryPartsList[i].showItem()
+        }
+
+        val adapter = InventoryPartsListViewAdapter(this, inventoryPartsList)
         inventoryPartsListView.adapter = adapter
 
         saveButton.setOnClickListener {
             Log.i("StateChange", "all: " + inventoryPartsList.size)
 
             for (i in 0 until inventoryPartsList.size - 3) {
-                Log.i("StateChange", "i: " + i)
-                var v = inventoryPartsListView.getChildAt(i)
-                var numberPicker = v.QuantityInStore
+                Log.i("StateChange", "i: $i")
+                val v = inventoryPartsListView.getChildAt(i)
+                val numberPicker = v.QuantityInStore
                 inventoryPartsList[i].quantityInStore = numberPicker.value
             }
 
-            inventoryPartsList.forEachIndexed {index, element ->
-                Log.i("StateChange", "element: " + element.itemId.toString() + " quantity: "+ element.quantityInStore)
-            }
             database.updateQuantityInStore(this.inventoryId.toString(), inventoryPartsList)
             super.finish()
         }

@@ -14,11 +14,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <ImageView
+            android:id="@+id/ItemImage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="20"
+            app:srcCompat="@android:color/black" />
+
         <TextView
             android:id="@+id/ItemId"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="25"
+            android:layout_weight="20"
             android:gravity="center_vertical|center_horizontal"
             android:text="Item Id"
             android:textAlignment="center" />
@@ -27,7 +34,7 @@
             android:id="@+id/ColorId"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="25"
+            android:layout_weight="20"
             android:gravity="center_vertical|center_horizontal"
             android:text="Color Id"
             android:textAlignment="center" />
@@ -36,7 +43,7 @@
             android:id="@+id/QuantityInSet"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="25"
+            android:layout_weight="20"
             android:gravity="center_vertical|center_horizontal"
             android:text="QuantityInSet"
             android:textAlignment="center" />
@@ -46,7 +53,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical|center_horizontal"
-            android:layout_weight="25"
+            android:layout_weight="20"
             android:ems="10"
             android:gravity="center_horizontal" />
 

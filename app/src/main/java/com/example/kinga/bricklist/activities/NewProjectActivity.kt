@@ -1,5 +1,6 @@
 package com.example.kinga.bricklist.activities
 
+import android.annotation.SuppressLint
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -13,10 +14,7 @@ import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
 import org.w3c.dom.NodeList
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
 import java.net.MalformedURLException
 import java.net.URL
 import java.sql.SQLException
@@ -52,14 +50,41 @@ class NewProjectActivity : AppCompatActivity() {
             } else {
                 val downloadXML = DownloadXML()
                 downloadXML.execute()
-                var items = parseXml()
-                items = database.setItemsIds(items)
-                items.forEach { it.showItem() }
+                var items = parseXml() // read items from xml file
+                items = database.getItemsIds(items) // read items ids from database
+                items = removeItemsNotFromDatabase(items) // remove items that are not in database
+                items = database.getItemsDesignIds(items) // read items design ids from database
+                for (i: Int in 0 until items.size) { // read items images from database
+                    items[i] = database.getItemImage(items[i])
+                    items[i].showItem()
+                }
+                for (i: Int in 0 until items.size) {
+                    if (items[i].image == null) { //if theres no image in database
+                        items[i].imageSrc = "https://www.lego.com/service/bricks/5/2/" + items[i].designId
+                        items[i].DownloadImage(database, items[i], items[i].imageSrc!!).execute()
+                    }
+                }
                 database.addNewInventory(projectNumber, items)
             }
         }
     }
 
+    private fun removeItemsNotFromDatabase(items: ArrayList<Item>): ArrayList<Item> {
+        val toRemove: ArrayList<Int> = arrayListOf()
+        for (i: Int in 0 until items.size) {
+            if (items[i].itemId == -9) {
+                val toast = Toast.makeText(baseContext, "There is no item with Id: " + items[i].code + " and color: " + items[i].color, Toast.LENGTH_LONG)
+                toast.show()
+                toRemove.add(i)
+            }
+        }
+        toRemove.forEach{
+            items.removeAt(it)
+        }
+        return items
+    }
+
+    @SuppressLint("StaticFieldLeak")
     private inner class DownloadXML: AsyncTask<String, Int, String>() {
         override fun doInBackground(vararg params: String?): String {
             try {
@@ -77,9 +102,9 @@ class NewProjectActivity : AppCompatActivity() {
                 var count = isStream.read(data)
                 while (count != -1) {
                     total += count.toLong()
-                    val progress_temp = total.toInt() * 100 / lengthOfFile
-                    if (progress_temp % 10 == 0 && progress != progress_temp) {
-                        progress = progress_temp
+                    val progressTemp = total.toInt() * 100 / lengthOfFile
+                    if (progressTemp % 10 == 0 && progress != progressTemp) {
+                        progress = progressTemp
                     }
                     fos.write(data, 0, count)
                     count = isStream.read(data)
@@ -111,19 +136,16 @@ class NewProjectActivity : AppCompatActivity() {
         }
     }
 
-    fun parseXml(): ArrayList<Item> {
-        var items = ArrayList<Item>()
+    private fun parseXml(): ArrayList<Item> {
+        val items = ArrayList<Item>()
         val filename = "$projectNumber.xml"
         val path = filesDir
         val inDir = File(path, "XML")
 
-        Log.i("StateChange", "1")
         if (inDir.exists()) {
-            Log.i("StateChange", "2")
 
             val file = File(inDir, filename)
             if(file.exists()) {
-                Log.i("StateChange", "3")
                 val xmlDoc: Document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file)
                 xmlDoc.documentElement.normalize()
 
@@ -134,7 +156,7 @@ class NewProjectActivity : AppCompatActivity() {
                     if (itemNode.nodeType == Node.ELEMENT_NODE) {
                         val elem = itemNode as Element
                         val children = elem.childNodes
-                        var item = Item()
+                        val item = Item()
 
                         for (j in 0 until children.length) {
                             val node=children.item(j)

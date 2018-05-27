@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import android.graphics.BitmapFactory
 import android.util.Log
 import com.example.kinga.bricklist.models.Inventory
 import com.example.kinga.bricklist.models.Item
@@ -15,10 +16,10 @@ class Database: SQLiteOpenHelper {
 
     private var myDataBase: SQLiteDatabase? = null
     private var context2: Context
-    private var DATABASE_NAME = "BrickList5.db"
+    private var DATABASE_NAME = "BrickList.db"
     private var DATABASE_PATH = "/data/data/com.example.kinga.bricklist/databases/"
 
-    constructor(context: Context):super(context, "BrickList5.db", null, 1){
+    constructor(context: Context):super(context, "BrickList.db", null, 1){
         this.context2 = context
     }
 
@@ -95,7 +96,7 @@ class Database: SQLiteOpenHelper {
         return true
     }
 
-    fun addNewInventory(inventoryNumber: String, items: MutableList<Item>): String {
+    fun addNewInventory(inventoryNumber: String, items: MutableList<Item>) {
         val inventoryID = getLastId("Inventories") + 1
 
         val db = this.writableDatabase
@@ -122,7 +123,6 @@ class Database: SQLiteOpenHelper {
         }
         db.setTransactionSuccessful()
         db.endTransaction()
-        return "success"
     }
 
     private fun getLastId(inventoryName: String): Int {
@@ -133,7 +133,9 @@ class Database: SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             lastId = cursor.getInt(0)
         }
-        cursor.close()
+        if (cursor != null && !cursor.isClosed) {
+            cursor.close()
+        }
         return lastId
     }
 
@@ -141,13 +143,17 @@ class Database: SQLiteOpenHelper {
         val query = "select _id, Name, Active from Inventories"
         val db = this.readableDatabase
         val cursor = db.rawQuery(query, null)
-        var inventoriesList = ArrayList<Inventory>()
+        val inventoriesList = ArrayList<Inventory>()
         if(cursor.moveToFirst()) {
             inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2)))
         }
         while(cursor.moveToNext()){
             inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2)))
         }
+        if (cursor != null && !cursor.isClosed) {
+            cursor.close()
+        }
+
         return inventoriesList
     }
 
@@ -155,18 +161,22 @@ class Database: SQLiteOpenHelper {
         val query = "select TypeID, ItemID, QuantityInSet, QuantityInStore, ColorID, extra from InventoriesParts where InventoryID = $inventoryId"
         val db = this.readableDatabase
         val cursor = db.rawQuery(query, null)
-        var items = ArrayList<Item>()
+        val items = ArrayList<Item>()
         if(cursor.moveToFirst()) {
-            items.add(Item(cursor.getString(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5) == 1, false))
+            items.add(Item(cursor.getString(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5) == 1, false))
         }
-        while(cursor.moveToNext()){
-            items.add(Item(cursor.getString(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5) == 1, false))
+        while(cursor.moveToNext()) {
+            items.add(Item(cursor.getString(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5) == 1, false))
         }
+        if (cursor != null && !cursor.isClosed) {
+            cursor.close()
+        }
+
         return items
     }
 
 
-    fun setItemsIds(items: ArrayList<Item>): ArrayList<Item>{
+    fun getItemsIds(items: ArrayList<Item>): ArrayList<Item>{
         items.forEach {
             val query = "select _id from Parts where Code=\"${it.code}\""
             val db = this.readableDatabase
@@ -174,15 +184,75 @@ class Database: SQLiteOpenHelper {
             if(cursor.moveToFirst()) {
                 it.itemId = cursor.getInt(0)
             }
+            if (cursor != null && !cursor.isClosed) {
+                cursor.close()
+            }
         }
         return items
     }
 
-    fun updateQuantityInStore(inventoryId: String, items: ArrayList<Item> ){
-        for (i: Int in 0 until items.size) {
+    fun getItemImage(item: Item): Item {
+        val query = "select Image from Codes where Code=" + item.designId + ";"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(query, null)
+        val blob: ByteArray?
+        if (cursor.moveToFirst()) {
+            blob = cursor.getBlob(0)
+            if (blob != null) {
+                Log.i("StateChange", "blob: $blob")
+                item.image = BitmapFactory.decodeByteArray(blob, 0, blob.size)
+                Log.i("StateChange", "item.image: " + BitmapFactory.decodeByteArray(blob, 0, blob.size))
+            }
+        }
+        if (cursor != null && !cursor.isClosed) {
+            cursor.close()
+        }
+        return item
+    }
+
+    private fun checkIfDesignIDExists(color: Int, itemId: Int): Boolean {
+        val db = this.readableDatabase
+        val query = "select Code from Codes where ColorID=$color and ItemID=$itemId"
+        val cursor = db.rawQuery(query, null)
+        if (cursor.count <= 0) {
+            cursor.close()
+            return false
+        }
+        if (cursor != null && !cursor.isClosed) {
+            cursor.close()
+        }
+        return true
+    }
+
+    fun getItemsDesignIds(items: ArrayList<Item>): ArrayList<Item>{
+        items.forEach {
+            if (checkIfDesignIDExists(it.color!!, it.itemId!!)) {
+                val query = "select Code from Codes where ColorID=${it.color} and ItemID=${it.itemId}"
+                val db = this.readableDatabase
+                val cursor = db.rawQuery(query, null)
+                if(cursor.moveToFirst()) {
+                    it.designId = cursor.getInt(0)
+                }
+                if (cursor != null && !cursor.isClosed) {
+                    cursor.close()
+                }
+            }
+        }
+        return items
+    }
+
+    fun saveImageToDatabase(item: Item, image:ContentValues){
+        val db = writableDatabase
+        val selection = "Code=" + item.designId + ";"
+        db.update("CODES", image, selection, null)
+        db.close()
+    }
+
+    fun updateQuantityInStore(inventoryId: String, items: ArrayList<Item>){
+        items.forEach {
             val db = this.writableDatabase
             db.beginTransaction()
-            val query = "update InventoriesParts set QuantityInStore=" + items[i].quantityInStore + " where InventoryID=" + inventoryId + " and ItemID=" + items[i].code + ";"
+            val query = "update InventoriesParts set QuantityInStore=" + it.quantityInStore + " where InventoryID=" + inventoryId + " and ItemID=" + it.code + ";"
             Log.i("StateChange", query)
             writableDatabase.execSQL(query)
             writableDatabase.setTransactionSuccessful()
