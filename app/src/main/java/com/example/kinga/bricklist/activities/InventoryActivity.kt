@@ -24,7 +24,7 @@ class InventoryActivity : AppCompatActivity() {
 
         this.inventoryId = intent.extras.getInt("inventoryId")
         this.inventoryName = intent.extras.getString("inventoryName")
-        inventoryNr.text = "Inventory \"$inventoryName\""
+        inventoryNr.text = "Inventory: \"$inventoryName\""
 
         val database = Database(this)
         try {
@@ -43,17 +43,18 @@ class InventoryActivity : AppCompatActivity() {
         var adapter = InventoryPartsListViewAdapter(this, inventoryPartsList)
         inventoryPartsListView.adapter = adapter
 
-        backButton.setOnClickListener {
-            Log.i("StateChange", "all: " + inventoryPartsListView.count)
+        saveButton.setOnClickListener {
+            Log.i("StateChange", "all: " + inventoryPartsList.size)
 
-            for (i in 0 until inventoryPartsListView.count - 3) {
+            for (i in 0 until inventoryPartsList.size - 3) {
+                Log.i("StateChange", "i: " + i)
                 var v = inventoryPartsListView.getChildAt(i)
                 var numberPicker = v.QuantityInStore
                 inventoryPartsList[i].quantityInStore = numberPicker.value
             }
 
             inventoryPartsList.forEachIndexed {index, element ->
-                Log.i("StateChange", element.itemId.toString() + " "+ element.quantityInStore)
+                Log.i("StateChange", "element: " + element.itemId.toString() + " quantity: "+ element.quantityInStore)
             }
             database.updateQuantityInStore(this.inventoryId.toString(), inventoryPartsList)
             super.finish()

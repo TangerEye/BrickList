@@ -15,10 +15,10 @@ class Database: SQLiteOpenHelper {
 
     private var myDataBase: SQLiteDatabase? = null
     private var context2: Context
-    private var DATABASE_NAME = "BrickList4.db"
+    private var DATABASE_NAME = "BrickList5.db"
     private var DATABASE_PATH = "/data/data/com.example.kinga.bricklist/databases/"
 
-    constructor(context: Context):super(context, "BrickList4.db", null, 8){
+    constructor(context: Context):super(context, "BrickList5.db", null, 1){
         this.context2 = context
     }
 
@@ -162,35 +162,31 @@ class Database: SQLiteOpenHelper {
         while(cursor.moveToNext()){
             items.add(Item(cursor.getString(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5) == 1, false))
         }
-        //items.forEach{it.showItem()}
         return items
     }
-    //constructor(itemType: String, code: String, quantityInSet: Int, quantityInStore: Int, color: Int, extra: Boolean, alternate: Boolean){
 
 
-        fun setItemsIds(items: ArrayList<Item>): ArrayList<Item>{
+    fun setItemsIds(items: ArrayList<Item>): ArrayList<Item>{
         items.forEach {
             val query = "select _id from Parts where Code=\"${it.code}\""
             val db = this.readableDatabase
             val cursor = db.rawQuery(query, null)
-            //Log.i("StateChange", "code: " + it.code)
             if(cursor.moveToFirst()) {
                 it.itemId = cursor.getInt(0)
-                //Log.i("StateChange", "item id: " + it.itemId.toString())
             }
         }
         return items
     }
 
     fun updateQuantityInStore(inventoryId: String, items: ArrayList<Item> ){
-        val db = this.writableDatabase
-        db.beginTransaction()
         for (i: Int in 0 until items.size) {
-            val query = "update InventoriesParts set QuantityInStore=" + items[i].quantityInStore + " where InventoryID = " + inventoryId + " and _id= " + items[i].itemId
-            //Log.i("StateChange", query)
+            val db = this.writableDatabase
+            db.beginTransaction()
+            val query = "update InventoriesParts set QuantityInStore=" + items[i].quantityInStore + " where InventoryID=" + inventoryId + " and ItemID=" + items[i].code + ";"
+            Log.i("StateChange", query)
             writableDatabase.execSQL(query)
+            writableDatabase.setTransactionSuccessful()
+            writableDatabase.endTransaction()
         }
-        writableDatabase.setTransactionSuccessful()
-        writableDatabase.endTransaction()
     }
 }

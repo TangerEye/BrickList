@@ -3,6 +3,7 @@ package com.example.kinga.bricklist.ListViewAdapters
 import android.view.View
 import android.view.ViewGroup
 import android.content.Context
+import android.graphics.Color
 import android.text.Editable
 import android.view.LayoutInflater
 import android.widget.*
@@ -34,18 +35,29 @@ class InventoryPartsListViewAdapter(context: Context, private val inventoryParts
         val quantityInSetTextView = rowView.findViewById(R.id.QuantityInSet) as TextView
         val quantityInStoreNumberPicker = rowView.findViewById(R.id.QuantityInStore) as NumberPicker
 
+        val item = getItem(position) as Item
+
+        item.showItem()
         quantityInStoreNumberPicker.minValue = 0
         quantityInStoreNumberPicker.maxValue = 100
-        quantityInStoreNumberPicker.setOnValueChangedListener{_, _, newVal ->
-            quantityInStoreNumberPicker.tag = newVal
-        }
-
-        val item = getItem(position) as Item
 
         idTextView.text = item.code.toString()
         colorTextView.text = item.color.toString()
         quantityInSetTextView.text = item.quantityInSet.toString()
         quantityInStoreNumberPicker.value = item.quantityInStore!!
+
+
+        quantityInStoreNumberPicker.setOnValueChangedListener{_, _, newVal ->
+            quantityInStoreNumberPicker.tag = newVal
+            if (item.quantityInSet!! <= newVal)
+                rowView.setBackgroundColor(Color.LTGRAY)
+            else
+                rowView.setBackgroundColor(Color.TRANSPARENT)
+        }
+        if (item.quantityInSet!! <= item.quantityInStore!!)
+            rowView.setBackgroundColor(Color.LTGRAY)
+        else
+            rowView.setBackgroundColor(Color.TRANSPARENT)
 
         return rowView
     }

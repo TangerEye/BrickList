@@ -10,13 +10,16 @@
         android:id="@+id/all"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:weightSum="100">
+        android:weightSum="100"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/ItemId"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="25"
+            android:gravity="center_vertical|center_horizontal"
             android:text="Item Id"
             android:textAlignment="center" />
 
@@ -25,6 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="25"
+            android:gravity="center_vertical|center_horizontal"
             android:text="Color Id"
             android:textAlignment="center" />
 
@@ -33,6 +37,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="25"
+            android:gravity="center_vertical|center_horizontal"
             android:text="QuantityInSet"
             android:textAlignment="center" />
 
@@ -40,9 +45,9 @@
             android:id="@+id/QuantityInStore"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|center_horizontal"
             android:layout_weight="25"
             android:ems="10"
-            android:layout_gravity="center_vertical|center_horizontal"
             android:gravity="center_horizontal" />
 
     </LinearLayout>

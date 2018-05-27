@@ -11,6 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="20"
+        android:gravity="center_vertical|center_horizontal"
         android:text="Id"
         android:textAlignment="center" />
 
@@ -19,6 +20,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="60"
+        android:gravity="center_vertical|center_horizontal"
         android:text="Inventory's name"
         android:textAlignment="center" />
 
@@ -27,6 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="20"
+        android:gravity="center_vertical|center_horizontal"
         android:text="Active"
         android:textAlignment="center" />
 </LinearLayout>
