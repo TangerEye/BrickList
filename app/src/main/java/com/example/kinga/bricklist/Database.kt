@@ -158,15 +158,15 @@ class Database: SQLiteOpenHelper {
     }
 
     fun getCurrentInventoryParts(inventoryId: Int): ArrayList<Item>{
-        val query = "select TypeID, ItemID, QuantityInSet, QuantityInStore, ColorID, extra from InventoriesParts where InventoryID = $inventoryId"
+        val query = "select _id, TypeID, ItemID, QuantityInSet, QuantityInStore, ColorID, extra from InventoriesParts where InventoryID = $inventoryId"
         val db = this.readableDatabase
         val cursor = db.rawQuery(query, null)
         val items = ArrayList<Item>()
         if(cursor.moveToFirst()) {
-            items.add(Item(cursor.getString(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5) == 1, false))
+            items.add(Item(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5), cursor.getInt(6) == 1, false))
         }
         while(cursor.moveToNext()) {
-            items.add(Item(cursor.getString(0), cursor.getInt(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5) == 1, false))
+            items.add(Item(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5), cursor.getInt(6) == 1, false))
         }
         if (cursor != null && !cursor.isClosed) {
             cursor.close()
@@ -199,9 +199,7 @@ class Database: SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             blob = cursor.getBlob(0)
             if (blob != null) {
-                Log.i("StateChange", "blob: $blob")
                 item.image = BitmapFactory.decodeByteArray(blob, 0, blob.size)
-                Log.i("StateChange", "item.image: " + BitmapFactory.decodeByteArray(blob, 0, blob.size))
             }
         }
         if (cursor != null && !cursor.isClosed) {
@@ -252,7 +250,7 @@ class Database: SQLiteOpenHelper {
         items.forEach {
             val db = this.writableDatabase
             db.beginTransaction()
-            val query = "update InventoriesParts set QuantityInStore=" + it.quantityInStore + " where InventoryID=" + inventoryId + " and ItemID=" + it.code + ";"
+            val query = "update InventoriesParts set QuantityInStore=" + it.quantityInStore + " where InventoryID=" + inventoryId + " and _id=" + it.id+ ";"
             Log.i("StateChange", query)
             writableDatabase.execSQL(query)
             writableDatabase.setTransactionSuccessful()

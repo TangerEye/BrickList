@@ -44,7 +44,6 @@ class InventoryActivity : AppCompatActivity() {
 
         for (i: Int in 0 until inventoryPartsList.size) {
             inventoryPartsList[i] = database.getItemImage(inventoryPartsList[i])
-            inventoryPartsList[i].showItem()
         }
 
         val adapter = InventoryPartsListViewAdapter(this, inventoryPartsList)

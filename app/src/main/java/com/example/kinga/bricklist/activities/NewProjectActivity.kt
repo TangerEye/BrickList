@@ -24,6 +24,7 @@ class NewProjectActivity : AppCompatActivity() {
 
     private var urlPart = ""
     private var projectNumber = ""
+    private var success = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,23 +49,24 @@ class NewProjectActivity : AppCompatActivity() {
                 toast.show()
 
             } else {
-                val downloadXML = DownloadXML()
+                val downloadXML = DownloadXML(this.success)
                 downloadXML.execute()
-                var items = parseXml() // read items from xml file
-                items = database.getItemsIds(items) // read items ids from database
-                items = removeItemsNotFromDatabase(items) // remove items that are not in database
-                items = database.getItemsDesignIds(items) // read items design ids from database
-                for (i: Int in 0 until items.size) { // read items images from database
-                    items[i] = database.getItemImage(items[i])
-                    items[i].showItem()
-                }
-                for (i: Int in 0 until items.size) {
-                    if (items[i].image == null) { //if theres no image in database
-                        items[i].imageSrc = "https://www.lego.com/service/bricks/5/2/" + items[i].designId
-                        items[i].DownloadImage(database, items[i], items[i].imageSrc!!).execute()
+                if (this.success) {
+                    var items = parseXml() // read items from xml file
+                    items = database.getItemsIds(items) // read items ids from database
+                    items = removeItemsNotFromDatabase(items) // remove items that are not in database
+                    items = database.getItemsDesignIds(items) // read items design ids from database
+                    for (i: Int in 0 until items.size) { // read items images from database
+                        items[i] = database.getItemImage(items[i])
                     }
+                    for (i: Int in 0 until items.size) {
+                        if (items[i].image == null) { //if theres no image in database
+                            items[i].imageSrc = "https://www.lego.com/service/bricks/5/2/" + items[i].designId
+                            items[i].DownloadImage(database, items[i], items[i].imageSrc!!).execute()
+                        }
+                    }
+                    database.addNewInventory(projectNumber, items)
                 }
-                database.addNewInventory(projectNumber, items)
             }
         }
     }
@@ -85,7 +87,7 @@ class NewProjectActivity : AppCompatActivity() {
     }
 
     @SuppressLint("StaticFieldLeak")
-    private inner class DownloadXML: AsyncTask<String, Int, String>() {
+    private inner class DownloadXML(success: Boolean): AsyncTask<String, Int, String>() {
         override fun doInBackground(vararg params: String?): String {
             try {
                 val url = URL("$urlPart$projectNumber.xml")
@@ -127,6 +129,7 @@ class NewProjectActivity : AppCompatActivity() {
             if (result.equals("success")) {
                 val toast = Toast.makeText(baseContext, "Project $projectNumber  has been successfully added.", Toast.LENGTH_LONG)
                 toast.show()
+                success = true
             }
             else {
                 val toast = Toast.makeText(baseContext, "An error occurred while adding the project.", Toast.LENGTH_LONG)
