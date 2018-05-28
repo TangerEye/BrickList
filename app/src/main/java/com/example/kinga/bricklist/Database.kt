@@ -72,7 +72,6 @@ class Database: SQLiteOpenHelper {
         val outFileName = DATABASE_PATH + DATABASE_NAME
         val myOutput = FileOutputStream(outFileName)
 
-        //transfer bytes from the inputfile to the outputfile
         val buffer = ByteArray(1024)
         var length = myInput.read(buffer)
         while (length > 0) {
@@ -251,7 +250,6 @@ class Database: SQLiteOpenHelper {
             val db = this.writableDatabase
             db.beginTransaction()
             val query = "update InventoriesParts set QuantityInStore=" + it.quantityInStore + " where InventoryID=" + inventoryId + " and _id=" + it.id+ ";"
-            Log.i("StateChange", query)
             writableDatabase.execSQL(query)
             writableDatabase.setTransactionSuccessful()
             writableDatabase.endTransaction()
