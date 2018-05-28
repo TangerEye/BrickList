@@ -45,6 +45,7 @@ class InventoryActivity : AppCompatActivity() {
         val inventoryPartsListView: ListView = findViewById(R.id.inventoryPartsListView)
         var inventoryPartsList = database.getCurrentInventoryParts(inventoryId)
         inventoryPartsList = database.getItemsDesignIds(inventoryPartsList)
+        inventoryPartsList = database.getItemsNames(inventoryPartsList)
 
         for (i: Int in 0 until inventoryPartsList.size) {
             inventoryPartsList[i] = database.getItemImage(inventoryPartsList[i])
@@ -83,6 +84,7 @@ class InventoryActivity : AppCompatActivity() {
 
             val idTextView = rowView.findViewById(R.id.ItemId) as TextView
             val colorTextView = rowView.findViewById(R.id.ColorId) as TextView
+            val nameTextView = rowView.findViewById(R.id.Name) as TextView
             val quantityInSetTextView = rowView.findViewById(R.id.QuantityInSet) as TextView
             val quantityInStoreNumberPicker = rowView.findViewById(R.id.QuantityInStore) as NumberPicker
             val itemImage = rowView.findViewById(R.id.ItemImage) as ImageView
@@ -93,6 +95,7 @@ class InventoryActivity : AppCompatActivity() {
             quantityInStoreNumberPicker.maxValue = 100
 
             idTextView.text = item.itemId.toString()
+            nameTextView.text = item.name
             colorTextView.text = item.color.toString()
             quantityInSetTextView.text = item.quantityInSet.toString()
             quantityInStoreNumberPicker.value = item.quantityInStore!!

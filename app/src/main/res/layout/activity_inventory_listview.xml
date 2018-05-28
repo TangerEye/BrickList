@@ -25,6 +25,15 @@
             android:id="@+id/ItemId"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="15"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="Item Id"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/Name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="20"
             android:gravity="center_vertical|center_horizontal"
             android:text="Item Id"
@@ -34,7 +43,7 @@
             android:id="@+id/ColorId"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="20"
+            android:layout_weight="15"
             android:gravity="center_vertical|center_horizontal"
             android:text="Color Id"
             android:textAlignment="center" />
@@ -43,7 +52,7 @@
             android:id="@+id/QuantityInSet"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="20"
+            android:layout_weight="15"
             android:gravity="center_vertical|center_horizontal"
             android:text="QuantityInSet"
             android:textAlignment="center" />
@@ -53,7 +62,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical|center_horizontal"
-            android:layout_weight="20"
+            android:layout_weight="15"
             android:ems="10"
             android:gravity="center_horizontal" />
 

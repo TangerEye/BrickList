@@ -58,15 +58,23 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="20"
+            android:layout_weight="15"
             android:gravity="center_vertical|center_horizontal"
             android:text="Id"
             android:textAlignment="center" />
 
         <TextView
+            android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="20"
+            android:gravity="center"
+            android:text="Name" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="15"
             android:gravity="center_vertical|center_horizontal"
             android:text="Color"
             android:textAlignment="center" />
@@ -75,7 +83,7 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="20"
+            android:layout_weight="15"
             android:gravity="center_vertical|center_horizontal"
             android:text="Q in set"
             android:textAlignment="center" />
@@ -83,7 +91,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="20"
+            android:layout_weight="15"
             android:gravity="center_vertical|center_horizontal"
             android:text="Q in store"
             android:textAlignment="center" />

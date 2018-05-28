@@ -238,6 +238,22 @@ class Database: SQLiteOpenHelper {
         return items
     }
 
+    fun getItemsNames(items: ArrayList<Item>): ArrayList<Item>{
+        items.forEach {
+            val query = "select Name from Parts where _id=${it.itemId}"
+            val db = this.readableDatabase
+            val cursor = db.rawQuery(query, null)
+            if(cursor.moveToFirst()) {
+                it.name = cursor.getString(0)
+            }
+            if (cursor != null && !cursor.isClosed) {
+                cursor.close()
+            }
+        }
+        return items
+    }
+
+
     fun saveImageToDatabase(item: Item, image:ContentValues){
         val db = writableDatabase
         val selection = "Code=" + item.designId + ";"
