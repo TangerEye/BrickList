@@ -15,8 +15,8 @@ import com.example.kinga.bricklist.models.Item
 import kotlinx.android.synthetic.main.activity_inventory.*
 import java.io.IOException
 import java.sql.SQLException
-import android.content.DialogInterface
 import android.support.v7.app.AlertDialog
+import android.util.Log
 import com.example.kinga.bricklist.utilities.ExportXML
 
 
@@ -24,7 +24,6 @@ class InventoryActivity : AppCompatActivity() {
 
     private var inventoryId = 0
     private var inventoryName = ""
-    var inventoryPartsList = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +45,7 @@ class InventoryActivity : AppCompatActivity() {
             throw e
         }
 
-        val inventoryPartsListView: ListView = this.findViewById(R.id.inventoryPartsListView)
+        val inventoryPartsListView: ListView = this.findViewById(R.id.inactiveInventoriesListView)
         var inventoryPartsList = database.getCurrentInventoryParts(inventoryId)
         inventoryPartsList = database.getItemsDesignIds(inventoryPartsList)
         inventoryPartsList = database.getItemsNames(inventoryPartsList)
@@ -59,14 +58,14 @@ class InventoryActivity : AppCompatActivity() {
         val adapter = InventoryPartsListViewAdapter(this, inventoryPartsList)
         inventoryPartsListView.adapter = adapter
 
-        saveButton.setOnClickListener {
+        backButton.setOnClickListener {
             database.updateQuantityInStore(this.inventoryId.toString(), inventoryPartsList)
 
             val builder = AlertDialog.Builder(this)
             builder.setTitle("Export missing bricks")
             builder.setMessage("Do you want to export XML file about missing bricks?")
 
-            builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
+            builder.setPositiveButton("Yes", { dialog, _ ->
                 var exportXML = ExportXML(filesDir)
                 exportXML.writeXML(inventoryPartsList, inventoryName)
                 dialog.dismiss()
@@ -75,7 +74,7 @@ class InventoryActivity : AppCompatActivity() {
                 super.finish()
             })
 
-            builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
+            builder.setNegativeButton("No", { dialog, _ ->
                 dialog.dismiss()
                 super.finish()
             })

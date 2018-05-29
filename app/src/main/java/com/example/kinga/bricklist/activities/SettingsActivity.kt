@@ -18,7 +18,7 @@ class SettingsActivity : AppCompatActivity()  {
         url = intent.getStringExtra("url")
         urlValue.setText(url)
 
-        saveButton.setOnClickListener {
+        backButton.setOnClickListener {
             val i = Intent(this, MainActivity::class.java)
             i.putExtra("url", urlValue.text.toString())
             setResult(Activity.RESULT_OK, i)

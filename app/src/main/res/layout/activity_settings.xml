@@ -42,7 +42,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/saveButton"
+            android:id="@+id/backButton"
             android:layout_width="100dp"
             android:layout_height="6dp"
             android:layout_gravity="center_horizontal"

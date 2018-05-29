@@ -24,13 +24,12 @@ class NewProjectActivity : AppCompatActivity() {
 
     private var urlPart = ""
     private var projectNumber = ""
-    var success = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_project)
         urlPart = intent.getStringExtra("url")
-        val database = Database(this)
+        var database = Database(this)
         try {
             database.createDataBase()
         } catch (e: IOException) {
@@ -39,7 +38,7 @@ class NewProjectActivity : AppCompatActivity() {
         try {
             database.openDataBase()
         } catch (e: SQLException) {
-            throw e
+            throw Error("Error opening database")
         }
 
         addProjectButton.setOnClickListener {
@@ -47,49 +46,18 @@ class NewProjectActivity : AppCompatActivity() {
             if (database.checkIfInventoryExists(projectNumber)) {
                 val toast = Toast.makeText(baseContext, "This project already exists.", Toast.LENGTH_LONG)
                 toast.show()
-
             } else {
-                val downloadXML = DownloadXML(this.success)
+                val downloadXML = DownloadXML(database)
                 downloadXML.execute()
-                if (this.success) {
-                    var items = parseXml() // read items from xml file
-                    items = database.getItemsIds(items) // read items ids from database
-                    items = removeItemsNotFromDatabase(items) // remove items that are not in database
-                    items = database.getItemsDesignIds(items) // read items design ids from database
-                    for (i: Int in 0 until items.size) { // read items images from database
-                        items[i] = database.getItemImage(items[i])
-                    }
-                    for (i: Int in 0 until items.size) {
-                        if (items[i].image == null) { //if theres no image in database
-                            items[i].imageSrc = "https://www.lego.com/service/bricks/5/2/" + items[i].designId
-                            items[i].DownloadImage(database, items[i], items[i].imageSrc!!).execute()
-                        }
-                    }
-                    database.addNewInventory(projectNumber, items)
-                    val toast = Toast.makeText(baseContext, "Project $projectNumber was added successfully.", Toast.LENGTH_LONG)
-                    toast.show()
-                }
             }
         }
-    }
-
-    private fun removeItemsNotFromDatabase(items: ArrayList<Item>): ArrayList<Item> {
-        val toRemove: ArrayList<Int> = arrayListOf()
-        for (i: Int in 0 until items.size) {
-            if (items[i].itemId == -9) {
-                val toast = Toast.makeText(baseContext, "There is no item with Id: " + items[i].code + " and color: " + items[i].color, Toast.LENGTH_LONG)
-                toast.show()
-                toRemove.add(i)
-            }
-        }
-        toRemove.forEach{
-            items.removeAt(it)
-        }
-        return items
     }
 
     @SuppressLint("StaticFieldLeak")
-    private inner class DownloadXML(success: Boolean): AsyncTask<String, Int, String>() {
+    private inner class DownloadXML(var database: Database): AsyncTask<String, Int, String>() {
+
+        private var success: Boolean = false
+
         override fun doInBackground(vararg params: String?): String {
             try {
                 val url = URL("$urlPart$projectNumber.xml")
@@ -115,7 +83,7 @@ class NewProjectActivity : AppCompatActivity() {
                 }
                 isStream.close()
                 fos.close()
-                success = true
+                this.success = true
             } catch (e: MalformedURLException) {
                 return "Malformed URL"
             } catch (e: FileNotFoundException) {
@@ -132,54 +100,89 @@ class NewProjectActivity : AppCompatActivity() {
                 val toast = Toast.makeText(baseContext, "An error occurred while adding the project.", Toast.LENGTH_LONG)
                 toast.show()
             }
+            if (this.success) {
+                add()
+            }
             finish()
         }
-    }
 
-    private fun parseXml(): ArrayList<Item> {
-        val items = ArrayList<Item>()
-        val filename = "$projectNumber.xml"
-        val path = filesDir
-        val inDir = File(path, "XML")
+        private fun add() {
+            var items = parseXml() // read items from xml file
+            items = database.getItemsIds(items) // read items ids from database
+            items = removeItemsNotFromDatabase(items) // remove items that are not in database
+            items = database.getItemsDesignIds(items) // read items design ids from database
+            for (i: Int in 0 until items.size) { // read items images from database
+                items[i] = database.getItemImage(items[i])
+            }
+            for (i: Int in 0 until items.size) {
+                if (items[i].image == null) { //if theres no image in database
+                    items[i].imageSrc = "https://www.lego.com/service/bricks/5/2/" + items[i].designId
+                    items[i].DownloadImage(database, items[i], items[i].imageSrc!!).execute()
+                }
+            }
+            database.addNewInventory(projectNumber, items)
+            val toast = Toast.makeText(baseContext, "Project $projectNumber was added successfully.", Toast.LENGTH_LONG)
+            toast.show()
+        }
 
-        if (inDir.exists()) {
+        private fun removeItemsNotFromDatabase(items: ArrayList<Item>): ArrayList<Item> {
+            var toRemove: ArrayList<Item> = arrayListOf()
+            for (i: Int in 0 until items.size) {
+                if (items[i].itemId == -9) {
+                    val toast = Toast.makeText(baseContext, "There is no item with ItemID: " + items[i].code + " and color: " + items[i].colorCode, Toast.LENGTH_LONG)
+                    toast.show()
+                    toRemove.add(items[i])
+                }
+            }
+            toRemove.forEach{
+                items.remove(it)
+            }
+            return items
+        }
 
-            val file = File(inDir, filename)
-            if(file.exists()) {
-                val xmlDoc: Document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file)
-                xmlDoc.documentElement.normalize()
+        private fun parseXml(): ArrayList<Item> {
+            val items = ArrayList<Item>()
+            val filename = "$projectNumber.xml"
+            val path = filesDir
+            val inDir = File(path, "XML")
 
-                val itemsXML: NodeList = xmlDoc.getElementsByTagName("ITEM")
-                for (i in 0 until itemsXML.length) {
-                    val itemNode: Node = itemsXML.item(i)
+            if (inDir.exists()) {
 
-                    if (itemNode.nodeType == Node.ELEMENT_NODE) {
-                        val elem = itemNode as Element
-                        val children = elem.childNodes
-                        val item = Item()
+                val file = File(inDir, filename)
+                if(file.exists()) {
 
-                        for (j in 0 until children.length) {
-                            val node=children.item(j)
-                            if (node is Element) {
-                                when (node.nodeName) {
-                                    "ITEMTYPE" -> { item.itemType = node.textContent }
-                                    "ITEMID" -> { item.code = node.textContent }
-                                    "QTY" -> { item.quantityInSet = node.textContent.toInt() }
-                                    "COLOR" -> { item.colorCode = node.textContent.toInt() }
-                                    "EXTRA" -> { item.extra = node.textContent == "Y" }
-                                    "ALTERNATE" -> { item.alternate = node.textContent == "Y" }
+                    val xmlDoc: Document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file)
+                    xmlDoc.documentElement.normalize()
+                    val itemsXML: NodeList = xmlDoc.getElementsByTagName("ITEM")
+                    for (i in 0 until itemsXML.length) {
+                        val itemNode: Node = itemsXML.item(i)
+                        if (itemNode.nodeType == Node.ELEMENT_NODE) {
+                            val elem = itemNode as Element
+                            val children = elem.childNodes
+                            val item = Item()
+
+                            for (j in 0 until children.length) {
+                                val node=children.item(j)
+                                if (node is Element) {
+                                    when (node.nodeName) {
+                                        "ITEMTYPE" -> { item.itemType = node.textContent }
+                                        "ITEMID" -> { item.code = node.textContent }
+                                        "QTY" -> { item.quantityInSet = node.textContent.toInt() }
+                                        "COLOR" -> { item.colorCode = node.textContent.toInt() }
+                                        "EXTRA" -> { item.extra = node.textContent == "Y" }
+                                        "ALTERNATE" -> { item.alternate = node.textContent == "Y" }
+                                    }
                                 }
                             }
-                        }
 
-                        if (item.itemType != null && item.code != null && item.quantityInSet != null
-                                && item.color != null && item.extra != null && item.alternate == false)
-                            items.add(item)
+                            if (item.itemType != null && item.code != null && item.quantityInSet != null
+                                    && item.colorCode != null && item.extra != null && item.alternate == false)
+                                items.add(item)
+                        }
                     }
                 }
             }
+            return items
         }
-        return items
     }
-
 }

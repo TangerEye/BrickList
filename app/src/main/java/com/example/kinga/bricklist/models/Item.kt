@@ -51,7 +51,6 @@ class Item {
         override fun doInBackground(vararg params: String?): String {
             try {
                 BufferedInputStream(URL(url).content as InputStream).use {
-                    Log.i("StateChange", "trying: " + url)
                     val baf = ArrayList<Byte>()
                     var current: Int
                     while (true) {
@@ -68,7 +67,6 @@ class Item {
             } catch (e: IOException) {
                 try {
                     url = "http://img.bricklink.com/P/" + item.color + "/" + item.code + ".gif"
-                    Log.i("StateChange", "trying2: " + url)
 
                     BufferedInputStream(URL(url).content as InputStream).use {
                         val baf = ArrayList<Byte>()
@@ -87,8 +85,6 @@ class Item {
                 } catch (e: IOException) {
                     try {
                         item.imageSrc = "https://www.bricklink.com/PL/" + item.code + ".jpg"
-                        Log.i("StateChange", "trying3: " + url)
-
                         BufferedInputStream(URL(url).content as InputStream).use {
                             val baf = ArrayList<Byte>()
                             var current: Int

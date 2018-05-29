@@ -8,12 +8,13 @@
 
     <Button
         android:id="@+id/newProjectButton"
-        android:layout_width="wrap_content"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="28dp"
         android:text="add new project"
-        app:layout_constraintEnd_toStartOf="@+id/settingsButton"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,10 +22,11 @@
         android:id="@+id/settingsButton"
         android:layout_width="57dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:layout_marginTop="28dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/newProjectButton"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_preferences" />
 
@@ -58,10 +60,18 @@
 
         <TextView
             android:id="@+id/ActiveLabel"
-            android:layout_width="0dp"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:text="Active"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/lastAccessedLabel"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="20"
-            android:text="Active"
+            android:gravity="center"
+            android:text="Last accessed"
             android:textAlignment="center" />
     </LinearLayout>
 
@@ -78,5 +88,19 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/archivedProjectsButton"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="28dp"
+        android:text="Open archived projects"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@+id/settingsButton"
+        app:layout_constraintHorizontal_bias="0.534"
+        app:layout_constraintStart_toEndOf="@+id/newProjectButton"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

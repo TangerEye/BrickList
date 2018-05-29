@@ -20,6 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.ArchivedProjectsActivity" />
         <activity android:name=".activities.NewProjectActivity" />
         <activity android:name=".activities.SettingsActivity" />
         <activity android:name=".activities.InventoryActivity"></activity>
