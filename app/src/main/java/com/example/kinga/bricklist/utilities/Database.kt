@@ -6,11 +6,15 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.graphics.BitmapFactory
+import android.os.Build
+import android.support.annotation.RequiresApi
 import android.util.Log
 import com.example.kinga.bricklist.models.Inventory
 import com.example.kinga.bricklist.models.Item
 import java.io.FileOutputStream
 import java.io.IOException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class Database: SQLiteOpenHelper {
 
@@ -95,6 +99,7 @@ class Database: SQLiteOpenHelper {
         return true
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun addNewInventory(inventoryNumber: String, items: MutableList<Item>) {
         val inventoryID = getLastId("Inventories") + 1
 
@@ -105,7 +110,7 @@ class Database: SQLiteOpenHelper {
         values.put("_id", inventoryID)
         values.put("Name", inventoryNumber)
         values.put("Active", 1)
-        values.put("LastAccessed", 1)
+        values.put("LastAccessed", Inventory().getCurrentDate())
         db.insert("Inventories", null, values)
 
         for (item in items){
@@ -124,6 +129,16 @@ class Database: SQLiteOpenHelper {
         db.endTransaction()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateInventoryDate(inventoryId: Int){
+        val db = this.writableDatabase
+        db.beginTransaction()
+        val query = "update Inventories set LastAccessed=" + Inventory().getCurrentDate() + " where _id=" + inventoryId + ";"
+        writableDatabase.execSQL(query)
+        writableDatabase.setTransactionSuccessful()
+        writableDatabase.endTransaction()
+    }
+
     private fun getLastId(inventoryName: String): Int {
         val query = "select max(_id) from $inventoryName;"
         val db = this.readableDatabase
@@ -139,15 +154,15 @@ class Database: SQLiteOpenHelper {
     }
 
     fun getInactiveInventories(): ArrayList<Inventory>{
-        val query = "select _id, Name, Active from Inventories where Active=0"
+        val query = "select _id, Name, Active, LastAccessed from Inventories where Active=0"
         val db = this.readableDatabase
         val cursor = db.rawQuery(query, null)
         val inventoriesList = ArrayList<Inventory>()
         if(cursor.moveToFirst()) {
-            inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2)))
+            inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3)))
         }
         while(cursor.moveToNext()){
-            inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2)))
+            inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3)))
         }
         if (cursor != null && !cursor.isClosed) {
             cursor.close()
@@ -157,15 +172,15 @@ class Database: SQLiteOpenHelper {
     }
 
     fun getActiveInventories(): ArrayList<Inventory>{
-        val query = "select _id, Name, Active from Inventories where Active=1"
+        val query = "select _id, Name, Active, LastAccessed from Inventories where Active=1"
         val db = this.readableDatabase
         val cursor = db.rawQuery(query, null)
         val inventoriesList = ArrayList<Inventory>()
         if(cursor.moveToFirst()) {
-            inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2)))
+            inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3)))
         }
         while(cursor.moveToNext()){
-            inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2)))
+            inventoriesList.add(Inventory(cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3)))
         }
         if (cursor != null && !cursor.isClosed) {
             cursor.close()

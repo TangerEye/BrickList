@@ -2,7 +2,6 @@ package com.example.kinga.bricklist.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -87,7 +86,7 @@ class ArchivedProjectsActivity : AppCompatActivity() {
 
             idTextView.text = inventory.id.toString()
             nameTextView.text = inventory.name
-            activeCheckBox.isChecked = inventory.active == 0
+            activeCheckBox.isChecked = inventory.active == 1
 
             activeCheckBox.setOnClickListener {
                 if (activeCheckBox.isChecked) {

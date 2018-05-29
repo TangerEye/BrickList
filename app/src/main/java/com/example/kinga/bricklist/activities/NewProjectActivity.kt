@@ -2,8 +2,10 @@ package com.example.kinga.bricklist.activities
 
 import android.annotation.SuppressLint
 import android.os.AsyncTask
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.util.Log
 import android.widget.Toast
 import com.example.kinga.bricklist.utilities.Database
@@ -94,6 +96,7 @@ class NewProjectActivity : AppCompatActivity() {
             return "success"
         }
 
+        @RequiresApi(Build.VERSION_CODES.O)
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
             if (!result.equals("success")) {
@@ -106,6 +109,7 @@ class NewProjectActivity : AppCompatActivity() {
             finish()
         }
 
+        @RequiresApi(Build.VERSION_CODES.O)
         private fun add() {
             var items = parseXml() // read items from xml file
             items = database.getItemsIds(items) // read items ids from database

@@ -114,6 +114,9 @@ class MainActivity : AppCompatActivity() {
             idTextView.text = inventory.id.toString()
             nameTextView.text = inventory.name
             activeCheckBox.isChecked = inventory.active == 1
+            val date: String = inventory.date.toString()
+            Log.i("StateChange", "date: " + date + " length: " + date.length)
+            lastAccessed.text = date.substring(6, 8) + "/" + date.substring(4, 6) + "/" + date.substring(0, 4)
 
             idTextView.setOnClickListener {
                 this.inventoriesList = database!!.getActiveInventories()

@@ -3,8 +3,10 @@ package com.example.kinga.bricklist.activities
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +27,7 @@ class InventoryActivity : AppCompatActivity() {
     private var inventoryId = 0
     private var inventoryName = ""
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inventory)
@@ -60,7 +63,7 @@ class InventoryActivity : AppCompatActivity() {
 
         backButton.setOnClickListener {
             database.updateQuantityInStore(this.inventoryId.toString(), inventoryPartsList)
-
+            database.updateInventoryDate(this.inventoryId)
             val builder = AlertDialog.Builder(this)
             builder.setTitle("Export missing bricks")
             builder.setMessage("Do you want to export XML file about missing bricks?")
