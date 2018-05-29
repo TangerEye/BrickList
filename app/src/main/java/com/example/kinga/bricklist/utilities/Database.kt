@@ -187,7 +187,9 @@ class Database: SQLiteOpenHelper {
     fun removeInventory(inventory: Inventory){
         val db = this.writableDatabase
         db.beginTransaction()
-        val query = "delete from Inventories where _id=" + inventory.id + ";"
+        var query = "delete from Inventories where _id=" + inventory.id + ";"
+        writableDatabase.execSQL(query)
+        query = "delete from InventoriesParts where InventoryID=" + inventory.id + ";"
         writableDatabase.execSQL(query)
         writableDatabase.setTransactionSuccessful()
         writableDatabase.endTransaction()
@@ -219,6 +221,8 @@ class Database: SQLiteOpenHelper {
             val cursor = db.rawQuery(query, null)
             if(cursor.moveToFirst()) {
                 it.itemId = cursor.getInt(0)
+            } else {
+                it.itemId = -9
             }
             if (cursor != null && !cursor.isClosed) {
                 cursor.close()
