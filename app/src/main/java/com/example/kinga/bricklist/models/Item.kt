@@ -4,9 +4,8 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.graphics.Bitmap
 import android.util.Log
-import android.graphics.BitmapFactory
 import android.os.AsyncTask
-import com.example.kinga.bricklist.Database
+import com.example.kinga.bricklist.utilities.Database
 import java.io.BufferedInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -19,7 +18,8 @@ class Item {
     var code: String? = null
     var quantityInSet: Int? = null
     var quantityInStore: Int? = 0
-    var color: Int? = null
+    var colorCode: Int? = null
+    var color: String? = null
     var extra: Boolean? = null
     var alternate: Boolean? = null
     var itemId: Int? = -9
@@ -28,13 +28,13 @@ class Item {
     var imageSrc: String? = null
     var name: String = ""
 
-    constructor(id: Int, itemType: String, itemId: Int, quantityInSet: Int, quantityInStore: Int, color: Int, extra: Boolean, alternate: Boolean){
+    constructor(id: Int, itemType: String, itemId: Int, quantityInSet: Int, quantityInStore: Int, colorCode: Int, extra: Boolean, alternate: Boolean){
         this.id = id
         this.itemType = itemType
         this.itemId = itemId
         this.quantityInSet = quantityInSet
         this.quantityInStore = quantityInStore
-        this.color = color
+        this.colorCode = colorCode
         this.extra = extra
         this.alternate = alternate
     }

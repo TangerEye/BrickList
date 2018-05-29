@@ -9,12 +9,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.example.kinga.bricklist.Database
+import com.example.kinga.bricklist.utilities.Database
 import com.example.kinga.bricklist.R
 import com.example.kinga.bricklist.models.Item
 import kotlinx.android.synthetic.main.activity_inventory.*
 import java.io.IOException
 import java.sql.SQLException
+import android.content.DialogInterface
+import android.support.v7.app.AlertDialog
+import com.example.kinga.bricklist.utilities.ExportXML
+
 
 class InventoryActivity : AppCompatActivity() {
 
@@ -42,10 +46,11 @@ class InventoryActivity : AppCompatActivity() {
             throw e
         }
 
-        val inventoryPartsListView: ListView = findViewById(R.id.inventoryPartsListView)
+        val inventoryPartsListView: ListView = this.findViewById(R.id.inventoryPartsListView)
         var inventoryPartsList = database.getCurrentInventoryParts(inventoryId)
         inventoryPartsList = database.getItemsDesignIds(inventoryPartsList)
         inventoryPartsList = database.getItemsNames(inventoryPartsList)
+        inventoryPartsList = database.getItemsColors(inventoryPartsList)
 
         for (i: Int in 0 until inventoryPartsList.size) {
             inventoryPartsList[i] = database.getItemImage(inventoryPartsList[i])
@@ -54,11 +59,31 @@ class InventoryActivity : AppCompatActivity() {
         val adapter = InventoryPartsListViewAdapter(this, inventoryPartsList)
         inventoryPartsListView.adapter = adapter
 
-
         saveButton.setOnClickListener {
             database.updateQuantityInStore(this.inventoryId.toString(), inventoryPartsList)
-            super.finish()
+
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Export missing bricks")
+            builder.setMessage("Do you want to export XML file about missing bricks?")
+
+            builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
+                var exportXML = ExportXML(filesDir)
+                exportXML.writeXML(inventoryPartsList, inventoryName)
+                dialog.dismiss()
+                val toast = Toast.makeText(baseContext, "File was exported.", Toast.LENGTH_LONG)
+                toast.show()
+                super.finish()
+            })
+
+            builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
+                dialog.dismiss()
+                super.finish()
+            })
+
+            val alert = builder.create()
+            alert.show()
         }
+
     }
 
     inner class InventoryPartsListViewAdapter(context: Context, private val inventoryPartsList: ArrayList<Item>):
@@ -83,7 +108,7 @@ class InventoryActivity : AppCompatActivity() {
             val rowView = inflater.inflate(R.layout.activity_inventory_listview, parent, false)
 
             val idTextView = rowView.findViewById(R.id.ItemId) as TextView
-            val colorTextView = rowView.findViewById(R.id.ColorId) as TextView
+            val colorTextView = rowView.findViewById(R.id.Color) as TextView
             val nameTextView = rowView.findViewById(R.id.Name) as TextView
             val quantityInSetTextView = rowView.findViewById(R.id.QuantityInSet) as TextView
             val quantityInStoreNumberPicker = rowView.findViewById(R.id.QuantityInStore) as NumberPicker
@@ -96,7 +121,7 @@ class InventoryActivity : AppCompatActivity() {
 
             idTextView.text = item.itemId.toString()
             nameTextView.text = item.name
-            colorTextView.text = item.color.toString()
+            colorTextView.text = item.color
             quantityInSetTextView.text = item.quantityInSet.toString()
             quantityInStoreNumberPicker.value = item.quantityInStore!!
             itemImage.setImageBitmap(item.image)

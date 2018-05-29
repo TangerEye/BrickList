@@ -40,12 +40,12 @@
             android:textAlignment="center" />
 
         <TextView
-            android:id="@+id/ColorId"
+            android:id="@+id/Color"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="15"
             android:gravity="center_vertical|center_horizontal"
-            android:text="Color Id"
+            android:text="Color"
             android:textAlignment="center" />
 
         <TextView

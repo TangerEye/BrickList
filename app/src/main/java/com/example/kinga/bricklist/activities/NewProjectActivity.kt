@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.example.kinga.bricklist.Database
+import com.example.kinga.bricklist.utilities.Database
 import com.example.kinga.bricklist.R
 import com.example.kinga.bricklist.models.Item
 import kotlinx.android.synthetic.main.activity_new_project.*
@@ -24,7 +24,7 @@ class NewProjectActivity : AppCompatActivity() {
 
     private var urlPart = ""
     private var projectNumber = ""
-    private var success = false
+    var success = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +66,8 @@ class NewProjectActivity : AppCompatActivity() {
                         }
                     }
                     database.addNewInventory(projectNumber, items)
+                    val toast = Toast.makeText(baseContext, "Project $projectNumber was added successfully.", Toast.LENGTH_LONG)
+                    toast.show()
                 }
             }
         }
@@ -113,6 +115,7 @@ class NewProjectActivity : AppCompatActivity() {
                 }
                 isStream.close()
                 fos.close()
+                success = true
             } catch (e: MalformedURLException) {
                 return "Malformed URL"
             } catch (e: FileNotFoundException) {
@@ -125,13 +128,7 @@ class NewProjectActivity : AppCompatActivity() {
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
-
-            if (result.equals("success")) {
-                val toast = Toast.makeText(baseContext, "Project $projectNumber  has been successfully added.", Toast.LENGTH_LONG)
-                toast.show()
-                success = true
-            }
-            else {
+            if (!result.equals("success")) {
                 val toast = Toast.makeText(baseContext, "An error occurred while adding the project.", Toast.LENGTH_LONG)
                 toast.show()
             }
@@ -168,7 +165,7 @@ class NewProjectActivity : AppCompatActivity() {
                                     "ITEMTYPE" -> { item.itemType = node.textContent }
                                     "ITEMID" -> { item.code = node.textContent }
                                     "QTY" -> { item.quantityInSet = node.textContent.toInt() }
-                                    "COLOR" -> { item.color = node.textContent.toInt() }
+                                    "COLOR" -> { item.colorCode = node.textContent.toInt() }
                                     "EXTRA" -> { item.extra = node.textContent == "Y" }
                                     "ALTERNATE" -> { item.alternate = node.textContent == "Y" }
                                 }

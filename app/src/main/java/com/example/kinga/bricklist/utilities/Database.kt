@@ -1,4 +1,4 @@
-package com.example.kinga.bricklist
+package com.example.kinga.bricklist.utilities
 
 import android.content.ContentValues
 import android.content.Context
@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.graphics.BitmapFactory
-import android.util.Log
 import com.example.kinga.bricklist.models.Inventory
 import com.example.kinga.bricklist.models.Item
 import java.io.FileOutputStream
@@ -190,6 +189,21 @@ class Database: SQLiteOpenHelper {
         return items
     }
 
+    fun getItemsColors(items: ArrayList<Item>): ArrayList<Item>{
+        items.forEach {
+            val query = "select Name from Colors where Code=\"${it.colorCode}\""
+            val db = this.readableDatabase
+            val cursor = db.rawQuery(query, null)
+            if(cursor.moveToFirst()) {
+                it.color = cursor.getString(0)
+            }
+            if (cursor != null && !cursor.isClosed) {
+                cursor.close()
+            }
+        }
+        return items
+    }
+
     fun getItemImage(item: Item): Item {
         val query = "select Image from Codes where Code=" + item.designId + ";"
         val db = this.readableDatabase
@@ -223,7 +237,7 @@ class Database: SQLiteOpenHelper {
 
     fun getItemsDesignIds(items: ArrayList<Item>): ArrayList<Item>{
         items.forEach {
-            if (checkIfDesignIDExists(it.color!!, it.itemId!!)) {
+            if (checkIfDesignIDExists(it.colorCode!!, it.itemId!!)) {
                 val query = "select Code from Codes where ColorID=${it.color} and ItemID=${it.itemId}"
                 val db = this.readableDatabase
                 val cursor = db.rawQuery(query, null)
